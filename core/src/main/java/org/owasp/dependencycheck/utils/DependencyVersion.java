@@ -22,7 +22,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.annotation.concurrent.NotThreadSafe;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -48,6 +50,14 @@ public class DependencyVersion implements Iterable<String>, Comparable<Dependenc
      * A list of the version parts.
      */
     private List<String> versionParts;
+
+    private static final Pattern RX_GENERIC_VERSION = Pattern.compile(
+            "(\\d{1,100}[a-z]{1,3}$|[a-z]{1,3}[_-]?\\d{1,100}|\\d{1,100}|(rc|release|snapshot|beta|alpha)$)",
+            Pattern.CASE_INSENSITIVE);
+
+    private static final Pattern RX_SEMANTIC_VERSION = Pattern.compile(
+            "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+            Pattern.CASE_INSENSITIVE);
 
     /**
      * Constructor for a empty DependencyVersion.
@@ -77,12 +87,18 @@ public class DependencyVersion implements Iterable<String>, Comparable<Dependenc
     public final void parseVersion(String version) {
         versionParts = new ArrayList<>();
         if (version != null) {
-            final Pattern rx = Pattern
-                    .compile("(\\d{1,100}[a-z]{1,3}$|[a-z]{1,3}[_-]?\\d{1,100}|\\d{1,100}|(rc|release|snapshot|beta|alpha)$)",
-                            Pattern.CASE_INSENSITIVE);
-            final Matcher matcher = rx.matcher(version.toLowerCase());
-            while (matcher.find()) {
-                versionParts.add(matcher.group());
+            Matcher matcher = RX_SEMANTIC_VERSION.matcher(version.toLowerCase());
+            if (matcher.matches()) {
+                for (int i = 1; i <= matcher.groupCount(); i++) {
+                    if (matcher.group(i) != null) {
+                        versionParts.add(matcher.group(i));
+                    }
+                }
+            } else {
+                matcher = RX_GENERIC_VERSION.matcher(version.toLowerCase());
+                while (matcher.find()) {
+                    versionParts.add(matcher.group());
+                }
             }
             if (versionParts.isEmpty()) {
                 versionParts.add(version);

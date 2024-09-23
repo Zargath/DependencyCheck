@@ -20,6 +20,7 @@ package org.owasp.dependencycheck.utils;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -54,6 +55,13 @@ public class DependencyVersionTest extends BaseTest {
         // TODO(code review): should this be here/do something?
         //assertEquals("0", parts.get(2));
 
+        instance.parseVersion("1.43.0+ed7ce4ba9890c2ead15861544fe7c8ea1b4d19b3");
+        parts = instance.getVersionParts();
+        assertEquals(4, parts.size());
+        assertEquals("1", parts.get(0));
+        assertEquals("43", parts.get(1));
+        assertEquals("0", parts.get(2));
+        assertEquals("ed7ce4ba9890c2ead15861544fe7c8ea1b4d19b3", parts.get(3));
     }
 
     /**

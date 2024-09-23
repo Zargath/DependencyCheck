@@ -19,8 +19,8 @@ package org.owasp.dependencycheck.analyzer;
 
 import java.io.File;
 import java.io.IOException;
-import org.junit.After;
 
+import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -117,6 +117,20 @@ public class AssemblyAnalyzerTest extends BaseTest {
         assertTrue(d.contains(EvidenceType.VENDOR, new Evidence("grokassembly", "CompanyName", "The Apache Software Foundation", Confidence.HIGHEST)));
         assertTrue(d.contains(EvidenceType.PRODUCT, new Evidence("grokassembly", "ProductName", "log4net", Confidence.HIGHEST)));
         assertEquals("log4net", d.getName());
+    }
+
+    @Test
+    public void testAzureCore() throws Exception {
+        assumeNotNull(analyzer.buildArgumentList());
+        File f = BaseTest.getResourceAsFile(this, "Azure.Core.dll");
+
+        Dependency d = new Dependency(f);
+        analyzer.analyze(d, null);
+        assertTrue(d.contains(EvidenceType.VERSION, new Evidence("grokassembly", "FileVersion", "1.4300.24.46205", Confidence.HIGH)));
+        assertTrue(d.contains(EvidenceType.VERSION, new Evidence("grokassembly", "ProductVersion", "1.43.0+ed7ce4ba9890c2ead15861544fe7c8ea1b4d19b3", Confidence.HIGHEST)));
+        assertEquals("1.43.0.ed7ce4ba9890c2ead15861544fe7c8ea1b4d19b3", d.getVersion());
+        assertTrue(d.contains(EvidenceType.PRODUCT, new Evidence("grokassembly", "ProductName", "Azure .NET SDK", Confidence.HIGHEST)));
+        assertEquals("Azure.Core", d.getName());
     }
 
     @Test
