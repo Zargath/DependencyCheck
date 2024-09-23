@@ -51,10 +51,17 @@ public class DependencyVersion implements Iterable<String>, Comparable<Dependenc
      */
     private List<String> versionParts;
 
+    /**
+     * Regular expression to match a parts in a version.
+     */
     private static final Pattern RX_GENERIC_VERSION = Pattern.compile(
             "(\\d{1,100}[a-z]{1,3}$|[a-z]{1,3}[_-]?\\d{1,100}|\\d{1,100}|(rc|release|snapshot|beta|alpha)$)",
             Pattern.CASE_INSENSITIVE);
 
+    /**
+     * Regular expression to match a semantic version.
+     * This was taken from https://semver.org/.
+     */
     private static final Pattern RX_SEMANTIC_VERSION = Pattern.compile(
             "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
             Pattern.CASE_INSENSITIVE);
